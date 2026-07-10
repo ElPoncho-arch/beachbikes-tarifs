@@ -1,4 +1,4 @@
-const CACHE_NAME = 'beachbikes-tarifs-v4';
+const CACHE_NAME = 'beachbikes-tarifs-v5';
 const ASSETS = [
   './',
   './index.html',

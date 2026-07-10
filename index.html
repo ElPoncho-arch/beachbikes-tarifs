@@ -276,9 +276,68 @@
     line-height:1.5;
   }
   .ticket-detail b{color:var(--white);}
+  .lock-overlay{
+    position:fixed;inset:0;z-index:9999;
+    background:var(--navy-900);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .lock-card{
+    background:var(--white);
+    border-radius:20px;
+    padding:32px 24px;
+    max-width:320px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .lock-ic{font-size:36px;margin-bottom:10px;}
+  .lock-title{font-size:19px;font-weight:800;margin:0 0 8px;color:var(--ink-900);}
+  .lock-sub{font-size:13px;color:var(--ink-500);margin:0 0 20px;line-height:1.4;}
+  .lock-input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1.5px solid var(--line-200);
+    font-size:15px;
+    margin-bottom:12px;
+    text-align:center;
+  }
+  .lock-input:focus{outline:none;border-color:var(--coral-500);}
+  .lock-btn{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:var(--coral-500);
+    color:var(--white);
+    font-weight:700;
+    font-size:15px;
+  }
+  .lock-btn:active{opacity:.85;}
+  .lock-error{
+    color:#D64545;
+    font-size:12px;
+    font-weight:600;
+    margin-top:10px;
+    min-height:14px;
+  }
 </style>
 </head>
 <body>
+
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-card">
+    <div class="lock-ic">🔒</div>
+    <h2 class="lock-title">Saison terminée</h2>
+    <p class="lock-sub">Le calculateur de tarifs 2026 est verrouillé. Contacte l'administrateur pour le mot de passe.</p>
+    <input type="password" id="lockInput" class="lock-input" placeholder="Mot de passe" autocomplete="off" enterkeyhint="done">
+    <button class="lock-btn" id="lockSubmit">Déverrouiller</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
 
 <header>
   <div class="header-top">
@@ -475,6 +534,31 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
+}
+
+const SEASON_END = new Date('2026-10-01T00:00:00');
+const UNLOCK_KEY = 'bb_unlocked_2026';
+const LOCK_PASSWORD = 'Appel_un_dev';
+const lockOverlay = document.getElementById('lockOverlay');
+const lockInput = document.getElementById('lockInput');
+const lockError = document.getElementById('lockError');
+
+function tryUnlock(){
+  if (lockInput.value === LOCK_PASSWORD) {
+    localStorage.setItem(UNLOCK_KEY, '1');
+    lockOverlay.style.display = 'none';
+  } else {
+    lockError.textContent = 'Mot de passe incorrect';
+    lockInput.value = '';
+    lockInput.focus();
+  }
+}
+
+document.getElementById('lockSubmit').onclick = tryUnlock;
+lockInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+
+if (localStorage.getItem(UNLOCK_KEY) !== '1' && new Date() >= SEASON_END) {
+  lockOverlay.style.display = 'flex';
 }
 </script>
 
