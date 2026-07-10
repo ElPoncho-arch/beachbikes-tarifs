@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tarifs BB">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#122A42">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>Beach Bikes — Tarifs</title>
+<style>
+  :root{
+    --navy-900:#122A42;
+    --navy-700:#1C3E5E;
+    --coral-500:#E2694F;
+    --sand-50:#FAF6EF;
+    --sand-100:#F1EAD9;
+    --ink-900:#1A1F26;
+    --ink-500:#5B6570;
+    --line-200:#E3DBC8;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100vh;height:100dvh;overflow:hidden;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--sand-50);
+    color:var(--ink-900);
+    -webkit-font-smoothing:antialiased;
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    flex:0 0 auto;
+    background:var(--navy-900);
+    padding:22px 20px 26px;
+    border-radius:0 0 22px 22px;
+    box-shadow:0 4px 14px rgba(18,42,66,0.25);
+  }
+  .header-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+  }
+  header .eyebrow{
+    color:var(--coral-500);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  header h1{
+    color:var(--white);
+    font-size:26px;
+    font-weight:800;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .reset-btn{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(255,255,255,.1);
+    border:1.5px solid rgba(255,255,255,.25);
+    color:var(--white);
+    border-radius:12px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:700;
+    margin-top:2px;
+  }
+  .reset-btn:active{background:rgba(255,255,255,.2);}
+  main{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:18px 16px 18px;
+    max-width:520px;
+    width:100%;
+    margin:0 auto;
+  }
+  section{margin-bottom:22px;}
+  h2{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-500);
+    margin:0 0 10px 2px;
+  }
+  .grid-velo{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .velo-card{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--white);
+    border:1.5px solid var(--line-200);
+    border-radius:14px;
+    padding:10px 12px;
+  }
+  .velo-card.has-qty{border-color:var(--navy-900);}
+  .velo-info{display:flex;align-items:center;gap:9px;min-width:0;}
+  .velo-info .ic{font-size:20px;flex-shrink:0;}
+  .velo-info .txt{font-size:13.5px;font-weight:600;line-height:1.2;}
+  .qty-stepper{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .qty-stepper button{
+    width:30px;height:30px;
+    border-radius:50%;
+    border:none;
+    background:var(--sand-100);
+    color:var(--navy-900);
+    font-size:17px;
+    font-weight:700;
+    line-height:1;
+  }
+  .qty-stepper button.plus{background:var(--navy-900);color:var(--white);}
+  .qty-stepper span{
+    min-width:16px;
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+  }
+  .row-scroll{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .row-scroll::-webkit-scrollbar{display:none;}
+  .duree-btn{
+    flex:0 0 auto;
+    min-width:52px;
+    background:var(--white);
+    border:1.5px solid var(--line-200);
+    border-radius:12px;
+    padding:12px 6px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--navy-900);
+    text-align:center;
+  }
+  .duree-btn.active{
+    background:var(--coral-500);
+    border-color:var(--coral-500);
+    color:var(--white);
+  }
+  .supp-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:10px;
+    background:var(--white);
+    border:1.5px solid var(--line-200);
+    border-radius:14px;
+    padding:10px 12px;
+    transition:opacity .15s;
+  }
+  .supp-row.disabled{opacity:.4;pointer-events:none;}
+  .supp-label{font-size:13px;font-weight:600;color:var(--ink-500);}
+  .stepper{display:flex;align-items:center;gap:12px;}
+  .stepper button{
+    width:32px;height:32px;
+    border-radius:50%;
+    border:none;
+    background:var(--sand-100);
+    color:var(--navy-900);
+    font-size:18px;
+    font-weight:700;
+    line-height:1;
+  }
+  .stepper span{
+    min-width:22px;
+    text-align:center;
+    font-weight:800;
+    font-size:15px;
+    font-variant-numeric:tabular-nums;
+  }
+  .assur-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--white);
+    border:1.5px solid var(--line-200);
+    border-radius:14px;
+    padding:12px 14px;
+  }
+  .assur-txt{font-size:14px;font-weight:600;}
+  .assur-sub{font-size:12px;color:var(--ink-500);font-weight:500;margin-top:1px;}
+  .switch{
+    position:relative;width:46px;height:27px;
+    background:var(--line-200);
+    border-radius:20px;
+    flex-shrink:0;
+  }
+  .switch::after{
+    content:"";
+    position:absolute;top:2.5px;left:2.5px;
+    width:22px;height:22px;
+    background:var(--white);
+    border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);
+    transition:left .15s;
+  }
+  .switch.on{background:var(--coral-500);}
+  .switch.on::after{left:21.5px;}
+  .ticket{
+    flex:0 0 auto;
+    background:var(--navy-900);
+    border-radius:20px 20px 0 0;
+    padding:14px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 20px rgba(18,42,66,.35);
+  }
+  .ticket-hole{
+    width:34px;height:6px;
+    background:rgba(255,255,255,.25);
+    border-radius:4px;
+    margin:0 auto 10px;
+  }
+  .ticket-items{
+    max-height:88px;
+    overflow-y:auto;
+    margin-bottom:8px;
+  }
+  .ticket-item{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    color:rgba(255,255,255,.75);
+    font-weight:600;
+    padding:2px 0;
+  }
+  .ticket-item b{color:var(--white);font-weight:700;}
+  .ticket-empty{
+    color:rgba(255,255,255,.5);
+    font-size:12.5px;
+    font-weight:600;
+    padding:4px 0;
+  }
+  .ticket-dash{
+    border-top:1.5px dashed rgba(255,255,255,.25);
+    margin:0 0 12px;
+  }
+  .ticket-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+  }
+  .ticket-meta{color:rgba(255,255,255,.6);font-size:12px;font-weight:600;margin-bottom:2px;}
+  .ticket-total{
+    color:var(--white);
+    font-size:36px;
+    font-weight:800;
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-0.01em;
+  }
+  .ticket-detail{
+    text-align:right;
+    color:rgba(255,255,255,.65);
+    font-size:12px;
+    font-weight:600;
+    line-height:1.5;
+  }
+  .ticket-detail b{color:var(--coral-500);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div>
+      <div class="eyebrow">Beach Bikes · Arcachon</div>
+      <h1>Calculateur de tarifs</h1>
+    </div>
+    <button class="reset-btn" id="resetBtn" aria-label="Nouveau client">↺ Nouveau client</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Panier</h2>
+    <div class="grid-velo" id="veloGrid"></div>
+  </section>
+
+  <section>
+    <h2>Durée</h2>
+    <div class="row-scroll" id="dureeRow"></div>
+    <div class="supp-row" id="suppRow">
+      <span class="supp-label">Jours supplémentaires</span>
+      <div class="stepper">
+        <button id="suppMinus">−</button>
+        <span id="suppVal">0</span>
+        <button id="suppPlus">+</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Assurance</h2>
+    <div class="assur-row" id="assurRow">
+      <div>
+        <div class="assur-txt">Assurance (panier entier)</div>
+        <div class="assur-sub" id="assurSub">Selon les vélos sélectionnés</div>
+      </div>
+      <div class="switch" id="assurSwitch"></div>
+    </div>
+  </section>
+</main>
+
+<div class="ticket">
+  <div class="ticket-hole"></div>
+  <div class="ticket-items" id="ticketItems"></div>
+  <div class="ticket-dash"></div>
+  <div class="ticket-bottom">
+    <div>
+      <div class="ticket-meta" id="ticketMeta">1 jour</div>
+      <div class="ticket-total" id="ticketTotal">0 €</div>
+    </div>
+    <div class="ticket-detail" id="ticketDetail"></div>
+  </div>
+</div>
+
+<script>
+const VELOS = [
+  {name:"Confort Adulte / Beach Cruiser", ic:"🚲", prices:[14,20,37,52,68,83,95,95], supp:10, assurance:2},
+  {name:"Électrique Classique",           ic:"🔋", prices:[30,40,75,107,140,168,195,195], supp:14, assurance:5},
+  {name:"Électrique Premium",             ic:"⚡", prices:[35,50,95,133,172,207,240,240], supp:16, assurance:5},
+  {name:"Vélo Cargo / Longtail",          ic:"🛒", prices:[40,55,105,149,195,230,270,270], supp:40, assurance:5},
+  {name:"Tandem",                          ic:"👫", prices:[25,35,60,85,112,134,155,155], supp:20, assurance:2},
+  {name:"VTT",                             ic:"⛰️", prices:[14,20,37,52,68,82,95,95], supp:10, assurance:2},
+  {name:"Vélo Enfant / Remorque",         ic:"🧒", prices:[8,12,23,33,43,52,60,60], supp:8, assurance:1},
+  {name:"Porte-bébé",                      ic:"👶", prices:[4,5,9,13,18,22,25,25], supp:3, assurance:0},
+];
+
+const DUREES = [
+  {label:"½ j", value:0.5},
+  {label:"1 j", value:1},
+  {label:"2 j", value:2},
+  {label:"3 j", value:3},
+  {label:"4 j", value:4},
+  {label:"5 j", value:5},
+  {label:"6 j", value:6},
+  {label:"7 j", value:7},
+];
+
+function initialState(){
+  return {
+    qty: VELOS.map(() => 0),
+    dureeIdx: 1,
+    supp: 0,
+    assurance: false,
+  };
+}
+
+let state = initialState();
+
+const veloGrid = document.getElementById('veloGrid');
+const dureeRow = document.getElementById('dureeRow');
+const suppRow = document.getElementById('suppRow');
+const suppVal = document.getElementById('suppVal');
+const assurSwitch = document.getElementById('assurSwitch');
+const assurSub = document.getElementById('assurSub');
+
+function buildVelos(){
+  veloGrid.innerHTML = '';
+  VELOS.forEach((v, i) => {
+    const card = document.createElement('div');
+    card.className = 'velo-card' + (state.qty[i] > 0 ? ' has-qty' : '');
+    card.innerHTML = `
+      <div class="velo-info">
+        <span class="ic">${v.ic}</span>
+        <span class="txt">${v.name}</span>
+      </div>
+      <div class="qty-stepper">
+        <button class="minus">−</button>
+        <span>${state.qty[i]}</span>
+        <button class="plus">+</button>
+      </div>`;
+    card.querySelector('.minus').onclick = () => { state.qty[i] = Math.max(0, state.qty[i] - 1); render(); };
+    card.querySelector('.plus').onclick = () => { state.qty[i] += 1; render(); };
+    veloGrid.appendChild(card);
+  });
+}
+
+function buildDurees(){
+  dureeRow.innerHTML = '';
+  DUREES.forEach((d, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'duree-btn' + (i === state.dureeIdx ? ' active' : '');
+    btn.textContent = d.label;
+    btn.onclick = () => { state.dureeIdx = i; if (i !== 7) state.supp = 0; render(); };
+    dureeRow.appendChild(btn);
+  });
+}
+
+document.getElementById('suppMinus').onclick = () => { state.supp = Math.max(0, state.supp - 1); render(); };
+document.getElementById('suppPlus').onclick = () => { state.supp += 1; render(); };
+assurSwitch.onclick = () => { state.assurance = !state.assurance; render(); };
+document.getElementById('resetBtn').onclick = () => { state = initialState(); render(); };
+
+function render(){
+  buildVelos();
+  buildDurees();
+
+  const duree = DUREES[state.dureeIdx];
+  const isSeven = state.dureeIdx === 7;
+  suppRow.classList.toggle('disabled', !isSeven);
+  suppVal.textContent = state.supp;
+
+  const totalDays = duree.value + (isSeven ? state.supp : 0);
+  // L'assurance est un forfait par jour facturé : une ½ journée compte comme 1 jour plein.
+  const assuranceDays = Math.ceil(totalDays);
+
+  const activeItems = VELOS
+    .map((v, i) => ({ v, qty: state.qty[i] }))
+    .filter(item => item.qty > 0);
+
+  const anyAssurance = activeItems.some(item => item.v.assurance > 0);
+  assurSub.textContent = anyAssurance ? "Applique le tarif assurance de chaque vélo" : "Aucun article du panier n'a d'assurance";
+  assurSwitch.classList.toggle('on', state.assurance);
+  assurSwitch.style.opacity = anyAssurance ? 1 : 0.45;
+
+  let locationTotal = 0;
+  let assuranceTotal = 0;
+  const ticketItems = document.getElementById('ticketItems');
+  ticketItems.innerHTML = '';
+
+  if (activeItems.length === 0) {
+    ticketItems.innerHTML = '<div class="ticket-empty">Ajoute des vélos ou accessoires au panier ↑</div>';
+  }
+
+  activeItems.forEach(({ v, qty }) => {
+    const unitPrice = v.prices[state.dureeIdx] + (isSeven ? state.supp * v.supp : 0);
+    const unitAssurance = state.assurance ? assuranceDays * v.assurance : 0;
+    const lineLocation = qty * unitPrice;
+    const lineAssurance = qty * unitAssurance;
+    locationTotal += lineLocation;
+    assuranceTotal += lineAssurance;
+
+    const row = document.createElement('div');
+    row.className = 'ticket-item';
+    row.innerHTML = `<span>${qty}× ${v.name}</span><b>${lineLocation + lineAssurance} €</b>`;
+    ticketItems.appendChild(row);
+  });
+
+  const grandTotal = locationTotal + assuranceTotal;
+
+  let durLabel = duree.label;
+  if (isSeven && state.supp > 0) durLabel = `7 j + ${state.supp} j supp`;
+  document.getElementById('ticketMeta').textContent = durLabel;
+  document.getElementById('ticketTotal').textContent = `${grandTotal} €`;
+
+  let detail = `Location ${locationTotal}€`;
+  if (state.assurance) detail += `<br><b>+ assurance ${assuranceTotal}€</b>`;
+  document.getElementById('ticketDetail').innerHTML = detail;
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
